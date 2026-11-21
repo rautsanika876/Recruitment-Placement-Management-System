@@ -1,4 +1,3 @@
-
 package com.rpms;
 
 import java.sql.SQLException;
@@ -8,6 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Main {
 
@@ -63,20 +63,68 @@ public class Main {
                 );
             }
 
-            // LOGIN
+            // LOGIN WITH ROLE SELECTION
             User loggedInUser = null;
 
             while (loggedInUser == null) {
 
                 System.out.println("\n=== RPMS Login ===");
+                System.out.println("1. Admin Login");
+                System.out.println("2. Recruiter Login");
+                System.out.println("3. Placement Officer Login");
+                System.out.println("4. Student Login");
+                System.out.println("0. Exit");
 
-                System.out.print("Enter your RPMS username: ");
+                System.out.print("Select login role: ");
+                String roleChoice = sc.nextLine().trim();
+
+                if ("0".equals(roleChoice)) {
+                    System.out.println("Goodbye.");
+                    return;
+                }
+
+                int selectedRoleId;
+
+                switch (roleChoice) {
+                    case "1":
+                        selectedRoleId = 1;
+                        break;
+
+                    case "2":
+                        selectedRoleId = 2;
+                        break;
+
+                    case "3":
+                        selectedRoleId = 3;
+                        break;
+
+                    case "4":
+                        selectedRoleId = 4;
+                        break;
+
+                    default:
+                        System.out.println("Invalid role selection.");
+                        continue;
+                }
+
+                System.out.print("Enter username: ");
                 String username = sc.nextLine().trim();
 
                 System.out.print("Password: ");
                 String password = sc.nextLine();
 
-                loggedInUser = loginService.login(username, password);
+                User authenticatedUser =
+                        loginService.login(username, password);
+
+                if (authenticatedUser == null) {
+                    System.out.println("Invalid username or password.");
+                } else if (authenticatedUser.getRoleId() != selectedRoleId) {
+                    System.out.println(
+                        "Selected role does not match your account."
+                    );
+                } else {
+                    loggedInUser = authenticatedUser;
+                }
             }
 
             // MAIN MENU
@@ -90,50 +138,64 @@ public class Main {
                     "Logged in as: " + loggedInUser.getFullName()
                 );
 
-                System.out.println("1. View All Candidates");
-                System.out.println("2. Register New Candidate");
-                System.out.println("3. View All Companies");
-                System.out.println("4. Register New Company");
-                System.out.println("5. View Available Jobs");
-                System.out.println("6. Create New Job Opening");
-                System.out.println("7. submit Job Application");
-                System.out.println("8. List applications");
-                System.out.println("9. Schedule interview");
-                System.out.println("10. List interviews");
-                System.out.println("11. Add interview feedback");
-                System.out.println("12. List interview feedback");
-                System.out.println("13. Add offer");
-                System.out.println("14. List offers");
-                System.out.println("15. Add placement");
-                System.out.println("16. List placements");
-                System.out.println("17. Generate Recruitment Reports");
-                System.out.println("18. Exit");
+                System.out.println("Role: " + roleName(loggedInUser.getRoleId()));
+                showRoleMenu(loggedInUser);
 
                 System.out.print("Choose: ");
-
                 String choice = sc.nextLine().trim();
+
+                if (!isAllowedOption(loggedInUser, choice)) {
+                    System.out.println(
+                        "Access denied. This option is not available for your role."
+                    );
+                    continue;
+                }
 
                 try {
 
-                    // LIST CANDIDATES
+                    // LIST CANDIDATES / STUDENT VIEW JOBS
                     if ("1".equals(choice)) {
 
-                        List<Candidate> candidates =
-                                candidateDAO.findAll();
+                        if (loggedInUser.getRoleId() == 4) {
 
-                        if (candidates.isEmpty()) {
-                            System.out.println("No candidates found.");
-                        }
+                            List<Job> jobs = jobDAO.findAll();
 
-                        for (Candidate c : candidates) {
-                            System.out.printf(
-                                "%d | %s | %s | %s | %s%n",
-                                c.getCandidateId(),
-                                c.getCandidateCode(),
-                                c.getFullName(),
-                                c.getPrimaryTechnology(),
-                                c.getProfileStatus()
-                            );
+                            if (jobs.isEmpty()) {
+                                System.out.println("No jobs found.");
+                            }
+
+                            for (Job j : jobs) {
+                                System.out.printf(
+                                    "%d | %s | %s | Company ID: %d | %s | Openings: %d | %s%n",
+                                    j.getJobId(),
+                                    j.getJobCode(),
+                                    j.getJobTitle(),
+                                    j.getCompanyId(),
+                                    j.getLocation(),
+                                    j.getOpenings(),
+                                    j.getStatus()
+                                );
+                            }
+
+                        } else {
+
+                            List<Candidate> candidates =
+                                    candidateDAO.findAll();
+
+                            if (candidates.isEmpty()) {
+                                System.out.println("No candidates found.");
+                            }
+
+                            for (Candidate c : candidates) {
+                                System.out.printf(
+                                    "%d | %s | %s | %s | %s%n",
+                                    c.getCandidateId(),
+                                    c.getCandidateCode(),
+                                    c.getFullName(),
+                                    c.getPrimaryTechnology(),
+                                    c.getProfileStatus()
+                                );
+                            }
                         }
                     }
 
@@ -698,7 +760,7 @@ public class Main {
                     }
 
                     // EXIT
-                    else if ("18".equals(choice)) {
+                    else if ("0".equals(choice)) {
 
                         System.out.println("Goodbye.");
                         break;
@@ -706,7 +768,7 @@ public class Main {
 
                     else {
                         System.out.println(
-                            "Choose between 1 and 18."
+                            "Choose a valid option from the menu."
                         );
                     }
 
@@ -751,5 +813,89 @@ public class Main {
     private static Integer optionalInteger(String value) {
         return value.trim().isBlank()
                 ? null : Integer.parseInt(value.trim());
+    }
+
+    private static String roleName(int roleId) {
+        switch (roleId) {
+            case 1: return "ADMIN";
+            case 2: return "RECRUITER";
+            case 3: return "PLACEMENT OFFICER";
+            case 4: return "STUDENT";
+            default: return "UNKNOWN";
+        }
+    }
+
+    private static void showRoleMenu(User user) {
+        int roleId = user.getRoleId();
+        System.out.println("\n=== " + roleName(roleId) + " MENU ===");
+
+        if (roleId == 1) {
+            System.out.println("1. View All Candidates");
+            System.out.println("2. Register New Candidate");
+            System.out.println("3. View All Companies");
+            System.out.println("4. Register New Company");
+            System.out.println("5. View Available Jobs");
+            System.out.println("6. Create New Job Opening");
+            System.out.println("7. Submit Job Application");
+            System.out.println("8. List Applications");
+            System.out.println("9. Schedule Interview");
+            System.out.println("10. List Interviews");
+            System.out.println("11. Add Interview Feedback");
+            System.out.println("12. List Interview Feedback");
+            System.out.println("13. Add Offer");
+            System.out.println("14. List Offers");
+            System.out.println("15. Add Placement");
+            System.out.println("16. List Placements");
+            System.out.println("17. Generate Recruitment Reports");
+        } else if (roleId == 2) {
+            System.out.println("3. View All Companies");
+            System.out.println("4. Register New Company");
+            System.out.println("5. View Available Jobs");
+            System.out.println("6. Create New Job Opening");
+            System.out.println("7. Submit Job Application");
+            System.out.println("8. List Applications");
+            System.out.println("9. Schedule Interview");
+            System.out.println("10. List Interviews");
+        } else if (roleId == 3) {
+            System.out.println("1. View All Candidates");
+            System.out.println("2. Register New Candidate");
+            System.out.println("8. List Applications");
+            System.out.println("10. List Interviews");
+            System.out.println("11. Add Interview Feedback");
+            System.out.println("12. List Interview Feedback");
+            System.out.println("13. Add Offer");
+            System.out.println("14. List Offers");
+            System.out.println("15. Add Placement");
+            System.out.println("16. List Placements");
+            System.out.println("17. Generate Recruitment Reports");
+        } else if (roleId == 4) {
+            System.out.println("1. View Available Jobs");
+        } else {
+            System.out.println("Unknown role. Please contact the administrator.");
+        }
+        System.out.println("0. Exit");
+    }
+
+    private static boolean isAllowedOption(User user, String choice) {
+        if ("0".equals(choice)) return true;
+
+        int roleId = user.getRoleId();
+        Set<String> allowedOptions;
+
+        if (roleId == 1) {
+            allowedOptions = Set.of("1", "2", "3", "4", "5", "6", "7",
+                    "8", "9", "10", "11", "12", "13", "14", "15", "16", "17");
+        } else if (roleId == 2) {
+            allowedOptions = Set.of("3", "4", "5", "6", "7", "8", "9", "10");
+        } else if (roleId == 3) {
+            allowedOptions = Set.of("1", "2", "8", "10", "11", "12", "13",
+                    "14", "15", "16", "17");
+        } else if (roleId == 4) {
+            allowedOptions = Set.of("1");
+        } else {
+            return false;
+        }
+
+        return allowedOptions.contains(choice);
     }
 }

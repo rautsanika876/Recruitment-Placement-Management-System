@@ -10,6 +10,7 @@ public class User {
     private int roleId;
     private String status;
 
+    // Constructor
     public User(String username, String passwordHash,
                 String fullName, String email, int roleId) {
 
@@ -20,6 +21,8 @@ public class User {
         this.roleId = roleId;
         this.status = "ACTIVE";
     }
+
+    // Getters and Setters
 
     public int getUserId() {
         return userId;
@@ -47,6 +50,19 @@ public class User {
 
     public int getRoleId() {
         return roleId;
+    }
+
+    public String getRoleName() {
+        switch (roleId) {
+            case 1:
+                return "ADMIN";
+            case 2:
+                return "RECRUITER";
+            case 3:
+                return "PLACEMENT_OFFICER";
+            default:
+                return "UNKNOWN";
+        }
     }
 
     public String getStatus() {
