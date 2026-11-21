@@ -1,6 +1,7 @@
-target/
+﻿java/target/
+**/target/
 .env
+**/.env
+rpms_full_backup.sql
+**/rpms_full_backup.sql
 *.class
-.vscode/
-.idea/
-*.log
