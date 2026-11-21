@@ -1,60 +1,191 @@
 # Recruitment & Placement Management System (RPMS)
 
-This starter project is based on the three supplied project specifications.
+## 1. Project Overview
 
-## Project parts
-- `login.html` through `reports.html`: 12-page static HTML/CSS prototype.
-- `css/style.css`: shared responsive styling.
-- `js/app.js`: small prototype search/reset helpers.
-- `database/database_schema.sql`: MySQL schema plus a small demo dataset.
-- `database/reports.sql`: sample reporting queries.
-- `java/`: starter Java console backend using JDBC, a Candidate model, DAO and eligibility service.
+The Recruitment & Placement Management System (RPMS) is a Java and MySQL-based application developed to manage recruitment and placement activities in a college.
 
-## 1. Run the UI prototype
-1. Extract the ZIP.
-2. Open the `Recruitment_Placement_Management_System` folder in VS Code.
-3. Double-click `login.html`, or use VS Code Live Server if installed.
-4. Click Login. This is a demo link, not a real authentication system.
-5. Navigate using the left menu.
+The system provides role-based login for Admin, Recruiter, and Placement Officer. It helps manage candidates, companies, job openings, applications, and placement-related information.
 
-**Important:** The HTML/CSS prototype is deliberately static. Its forms show demo messages and do not save to MySQL, matching the supplied UI specification. The Java backend is a separate starter component.
+## 2. Technologies Used
 
-## 2. Create the MySQL database
-1. Start MySQL Server and open MySQL Workbench.
-2. Open `database/database_schema.sql`.
-3. Execute the whole script. It creates `rpms_db`, tables, and starter sample data.
-4. Open `database/reports.sql` and run individual report queries after the schema is created.
+- Java (JDK 17)
+- JDBC
+- MySQL
+- Maven
+- VS Code
 
-The supplied database design expects a larger sample dataset (30+ candidates and more transactions); the included rows are only starter examples.
+## 3. User Roles
 
-## 3. Configure Java / JDBC
-Requirements: JDK 17+, Maven, MySQL Server.
-1. Open the `java` folder as a Maven project in an IDE or VS Code with Java extensions.
-2. Set environment variables if your MySQL credentials differ:
-   - `RPMS_DB_URL` (default `jdbc:mysql://localhost:3306/rpms_db?useSSL=false&serverTimezone=UTC`)
-   - `RPMS_DB_USER` (default `root`)
-   - `RPMS_DB_PASSWORD` (default blank)
-3. Build with `mvn package`.
-4. Run `com.rpms.Main` from your IDE, or run it with the Maven-built classpath.
-5. Use the console menu to list or add candidates.
+### Admin
+- Manage candidates
+- Manage companies
+- Manage job openings
+- Manage applications
+- Access recruitment and placement information
 
-Do not use real personal data in demo databases. For a real deployment, configure secure passwords and add authentication/authorization.
+### Recruiter
+- Manage recruitment-related information
+- View candidates and job openings
+- Manage applications
 
-## 4. Current scope and honest limitations
-This package is a complete UI prototype and a starter Java/MySQL backend, not yet a fully integrated production application. The console backend currently demonstrates candidate listing/creation and basic eligibility checks. Company, job, application, interview, offer, placement, login/roles, history, and reports are represented in the UI/database design but need their Java service/DAO operations implemented to become fully functional. The HTML screens are not connected to Java. Do not present the demo UI as a live database-connected website.
+### Placement Officer
+- Manage placement-related activities
+- View candidate and application information
+- Monitor placement information
 
-## 5. Suggested build order
-1. Verify UI pages and navigation.
-2. Create database and inspect tables.
-3. Run Java candidate console.
-4. Add DAO/service methods for companies and jobs.
-5. Implement application eligibility and duplicate-application prevention.
-6. Add interview feedback, offer, joining and placement transactions.
-7. Add role-based login and audit history.
-8. Add more realistic sample data, screenshots and final report.
+## 4. Project Modules
 
-## Modules
-Admin, Recruiter, Placement Officer; Candidates; Companies; Jobs; Applications; Eligibility; Interviews; Feedback; Offers; Joining/Placements; Reports; Activity Logs.
+- User Login and Role Management
+- Candidate Management
+- Company Management
+- Job Management
+- Application Management
+- Eligibility Checking
+- Placement Management
 
-## Viva one-line explanation
-"The Recruitment & Placement Management System is a Java and MySQL based application that manages candidates, company job openings, eligibility, applications, interviews, offers and placement records. HTML and CSS are used for a separate static UI prototype."
+## 5. Project Structure
+
+```text
+Recruitment_Placement_Management_System
+│
+├── README.md
+├── database
+│   └── database_schema.sql
+│
+└── java
+    ├── pom.xml
+    └── src
+        └── main
+            └── java
+                └── com
+                    └── rpms
+                        ├── Main.java
+                        ├── User.java
+                        ├── UserDAO.java
+                        └── ...
+```
+
+## 6. Requirements
+
+Install the following software before running the project:
+
+- JDK 17 or later
+- Apache Maven
+- MySQL Server
+- MySQL Workbench
+- Visual Studio Code (optional)
+
+## 7. Database Setup
+
+1. Start MySQL Server.
+2. Open MySQL Workbench.
+3. Open the provided database SQL file.
+4. Execute the SQL script.
+5. Ensure the database `rpms_db` is created successfully.
+
+The database stores user accounts, candidates, companies, jobs, and application-related information.
+
+## 8. Database Configuration
+
+The application uses the following environment variables for database connection:
+
+- `RPMS_DB_URL`
+- `RPMS_DB_USER`
+- `RPMS_DB_PASSWORD`
+
+Default database URL:
+
+```text
+jdbc:mysql://localhost:3306/rpms_db?useSSL=false&serverTimezone=UTC
+```
+
+Configure the database username and password according to your local MySQL installation.
+
+Do not upload personal database passwords or `.env` files to GitHub.
+
+## 9. How to Run the Project
+
+### Step 1: Open the Project
+
+Open the `Recruitment_Placement_Management_System` folder in VS Code.
+
+### Step 2: Open Java Project Folder
+
+Open the terminal and navigate to the `java` folder.
+
+### Step 3: Compile the Project
+
+```bash
+mvn clean compile
+```
+
+### Step 4: Run the Application
+
+```bash
+mvn exec:java "-Dexec.mainClass=com.rpms.Main"
+```
+
+### Step 5: Login
+
+Select the appropriate login role and enter the username and password.
+
+After successful login, the system displays the menu according to the user's role.
+
+## 10. Demo Login Credentials
+
+The following demo accounts are used for evaluation.
+
+### Admin
+- Login Role: `1`
+- Username: `admin`
+- Password: Provided separately for evaluation
+
+### Recruiter
+- Login Role: `2`
+- Username: `recruiter`
+- Password: Provided separately for evaluation
+
+### Placement Officer
+- Login Role: `3`
+- Username: `placementofficer`
+- Password: Provided separately for evaluation
+
+### Login Instructions
+
+1. Run the application.
+2. Select the login role:
+   - `1` for Admin
+   - `2` for Recruiter
+   - `3` for Placement Officer
+3. Enter the username.
+4. Enter the corresponding password.
+5. Access the role-specific menu.
+
+Note: Demo accounts must exist in the database before login. Demo passwords will be shared separately with the evaluator.
+
+## 11. Application Interface
+
+The current application uses a menu-driven Java console interface.
+
+Users interact with the system through the terminal by selecting menu options and entering the required information.
+
+## 12. Project Scope
+
+RPMS demonstrates the use of Java, JDBC, and MySQL for managing recruitment and placement information.
+
+The application includes role-based login and menu-driven operations for recruitment and placement management.
+
+## 13. Future Enhancements
+
+- Graphical User Interface (GUI)
+- Web-based application
+- Resume upload
+- Email notifications
+- Advanced placement reports
+- Improved dashboard and analytics
+
+## 14. Conclusion
+
+The Recruitment & Placement Management System provides a centralized approach to managing recruitment and placement activities in a college.
+
+It helps organize candidate information, company details, job openings, applications, and placement-related records using Java and MySQL.
