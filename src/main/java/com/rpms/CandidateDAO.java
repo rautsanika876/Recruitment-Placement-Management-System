@@ -1,3 +1,4 @@
+
 package com.rpms;
 
 import java.sql.*;
@@ -6,28 +7,65 @@ import java.util.List;
 
 public class CandidateDAO {
 
+    // Validate Candidate Details
+    private void validateCandidate(Candidate c) throws SQLException {
+
+        if (c.getFullName() == null || c.getFullName().isBlank()) {
+            throw new SQLException("Candidate name cannot be empty.");
+        }
+
+        if (c.getEmail() == null ||
+                !c.getEmail().matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            throw new SQLException("Please enter a valid email address.");
+        }
+
+        if (c.getMobile() == null ||
+                !c.getMobile().matches("\\d{10}")) {
+            throw new SQLException("Mobile number must contain exactly 10 digits.");
+        }
+    }
+
     // Add Candidate
     public void add(Candidate c) throws SQLException {
 
-        String sql = "INSERT INTO candidates(candidate_code,full_name,email,mobile,qualification," +
-                "passing_year,percentage,backlog_count,primary_technology,profile_status) " +
-                "VALUES(?,?,?,?,?,?,?,?,?,'ACTIVE')";
+        validateCandidate(c);
+
+        String checkSql = "SELECT candidate_id FROM candidates " +
+                "WHERE email = ? OR mobile = ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement checkPs = con.prepareStatement(checkSql)) {
 
-            ps.setString(1, c.getCandidateCode());
-            ps.setString(2, c.getFullName());
-            ps.setString(3, c.getEmail());
-            ps.setString(4, c.getMobile());
-            ps.setString(5, c.getQualification());
-            ps.setInt(6, c.getPassingYear());
-            ps.setDouble(7, c.getPercentage());
-            ps.setInt(8, c.getBacklogCount());
-            ps.setString(9, c.getPrimaryTechnology());
+            checkPs.setString(1, c.getEmail());
+            checkPs.setString(2, c.getMobile());
 
-            ps.executeUpdate();
-            System.out.println("Candidate added successfully!");
+            try (ResultSet rs = checkPs.executeQuery()) {
+                if (rs.next()) {
+                    throw new SQLException(
+                            "Candidate with this email or mobile already exists."
+                    );
+                }
+            }
+
+            String sql = "INSERT INTO candidates(candidate_code,full_name,email,mobile,qualification," +
+                    "passing_year,percentage,backlog_count,primary_technology,profile_status) " +
+                    "VALUES(?,?,?,?,?,?,?,?,?,'ACTIVE')";
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setString(1, c.getCandidateCode());
+                ps.setString(2, c.getFullName());
+                ps.setString(3, c.getEmail());
+                ps.setString(4, c.getMobile());
+                ps.setString(5, c.getQualification());
+                ps.setInt(6, c.getPassingYear());
+                ps.setDouble(7, c.getPercentage());
+                ps.setInt(8, c.getBacklogCount());
+                ps.setString(9, c.getPrimaryTechnology());
+
+                ps.executeUpdate();
+                System.out.println("Candidate added successfully!");
+            }
         }
     }
 

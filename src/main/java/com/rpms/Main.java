@@ -46,10 +46,10 @@ public class Main {
 
                 System.out.println("\n=== First Admin Setup ===");
 
-                System.out.print("Admin username: ");
+                System.out.print("Enter your RPMS username: ");
                 String username = sc.nextLine().trim();
 
-                System.out.print("Admin password: ");
+                System.out.print("Enter your password:: ");
                 String password = sc.nextLine();
 
                 System.out.print("Full name: ");
@@ -70,7 +70,7 @@ public class Main {
 
                 System.out.println("\n=== RPMS Login ===");
 
-                System.out.print("Username: ");
+                System.out.print("Enter your RPMS username: ");
                 String username = sc.nextLine().trim();
 
                 System.out.print("Password: ");
@@ -90,13 +90,13 @@ public class Main {
                     "Logged in as: " + loggedInUser.getFullName()
                 );
 
-                System.out.println("1. List candidates");
-                System.out.println("2. Add candidate");
-                System.out.println("3. List companies");
-                System.out.println("4. Add company");
-                System.out.println("5. List jobs");
-                System.out.println("6. Add job");
-                System.out.println("7. Add application");
+                System.out.println("1. View All Candidates");
+                System.out.println("2. Register New Candidate");
+                System.out.println("3. View All Companies");
+                System.out.println("4. Register New Company");
+                System.out.println("5. View Available Jobs");
+                System.out.println("6. Create New Job Opening");
+                System.out.println("7. submit Job Application");
                 System.out.println("8. List applications");
                 System.out.println("9. Schedule interview");
                 System.out.println("10. List interviews");
@@ -106,7 +106,7 @@ public class Main {
                 System.out.println("14. List offers");
                 System.out.println("15. Add placement");
                 System.out.println("16. List placements");
-                System.out.println("17. View Reports");
+                System.out.println("17. Generate Recruitment Reports");
                 System.out.println("18. Exit");
 
                 System.out.print("Choose: ");
